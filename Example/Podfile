@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'HHSelectPhoto_Example' do
+  pod 'HHSelectPhoto', :path => '../'
+
+  target 'HHSelectPhoto_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
