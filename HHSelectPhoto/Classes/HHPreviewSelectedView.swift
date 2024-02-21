@@ -10,12 +10,12 @@ import UIKit
 import HHUtils
 
 // MARK: 插入删除cell的动画
-class HHCellAnimateFlowLayout: UICollectionViewFlowLayout {
-    @objc var addAnimatedIndex = -1
-    @objc var removeAnimatedIndex = -1
+public class HHCellAnimateFlowLayout: UICollectionViewFlowLayout {
+    @objc public var addAnimatedIndex = -1
+    @objc public var removeAnimatedIndex = -1
     
     // 添加时动画
-    override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+    public override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)
         if addAnimatedIndex == itemIndexPath.row {
             attributes?.transform = CGAffineTransformMakeScale(0.0, 0.0)
@@ -27,7 +27,7 @@ class HHCellAnimateFlowLayout: UICollectionViewFlowLayout {
     }
     
     //删除时动画
-    override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+    public override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
         if removeAnimatedIndex == itemIndexPath.row {
             attributes?.transform = CGAffineTransformMakeScale(0.1, 0.1)
@@ -36,7 +36,7 @@ class HHCellAnimateFlowLayout: UICollectionViewFlowLayout {
         return attributes
     }
     
-    override func finalizeCollectionViewUpdates() {
+    public override func finalizeCollectionViewUpdates() {
         super.finalizeCollectionViewUpdates()
         //释放插入和删除索引路径
         removeAnimatedIndex = -1

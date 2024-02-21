@@ -11,7 +11,7 @@ import Foundation
 import Photos
 import HHUtils
 
-class HHPermissionTool: NSObject {
+public class HHPermissionTool: NSObject {
     // MARK: 相册权限
     @objc static public func requestPHAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
         let status: PHAuthorizationStatus

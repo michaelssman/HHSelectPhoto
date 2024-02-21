@@ -41,10 +41,10 @@ class HHAssetCell: UICollectionViewCell {
     @objc optional func HHPhotosViewControllerCancel()
 }
 
-class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+public class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     /// 选中的照片
-    @objc public var selectedPHArray: Array<HHAssetModel> = []
+    @objc var selectedPHArray: Array<HHAssetModel> = []
     
     /// 最小照片必选张数,默认是0
     var minImagesCount: Int = 0
@@ -114,7 +114,7 @@ class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
         return selectedView
     }()
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
@@ -196,7 +196,7 @@ class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UIColl
         titleButton.imageRect = CGRect(x: (titleButtonWidth - (titleButton.titleWidth + 8 + 12)) / 2.0 + (titleButton.titleWidth + 8), y: (titleButtonHeight - 9.5) / 2.0, width: 12, height: 9.5)
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: HHAssetCell = collectionView.dequeueReusableCell(withReuseIdentifier: "HHAssetCell", for: indexPath) as! HHAssetCell
         HHImageManager.getPhoto(asset: assetModels[indexPath.row].asset, photoWidth: itemSize, networkAccessAllowed: false) { photo, info, isDegraded in
             cell.imageView.image = photo
@@ -214,7 +214,7 @@ class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
         return cell
     }
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return assetModels.count
     }
     
@@ -290,7 +290,7 @@ class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UIColl
         })
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(selectedPHArray) {
             guard let change = change else { return }
             let kind: Int64 = change[.kindKey] as! Int64

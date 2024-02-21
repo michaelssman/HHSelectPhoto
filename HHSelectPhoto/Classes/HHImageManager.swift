@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import Photos
 
-class HHImageManager: NSObject {
+public class HHImageManager: NSObject {
     
     @objc static public let manager = HHImageManager()//使用let这种方式来保证线程安全
     private override init() { }// 私有化构造方法(如果有需要也可以去掉)
