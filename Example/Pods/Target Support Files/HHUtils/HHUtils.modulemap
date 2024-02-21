@@ -1,0 +1,6 @@
+framework module HHUtils {
+  umbrella header "HHUtils-umbrella.h"
+
+  export *
+  module * { export * }
+}

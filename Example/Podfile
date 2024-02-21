@@ -1,3 +1,5 @@
+source 'https://github.com/michaelssman/HHSpecs.git'
+
 use_frameworks!
 
 platform :ios, '10.0'

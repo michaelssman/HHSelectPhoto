@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'HHSelectPhoto'
-  s.version          = '0.1.0'
+  s.version          = '0.1.2'
   s.summary          = 'A short description of HHSelectPhoto.'
 
 # This description is used to generate tags and improve search results.
@@ -32,11 +32,12 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'HHSelectPhoto/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'HHSelectPhoto' => ['HHSelectPhoto/Assets/*.png']
-  # }
+  s.resource_bundles = {
+      'HHSelectPhoto' => ['HHSelectPhoto/Assets/*.{png,jpeg,jpg,imageset}']
+  }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'HHUtils', '0.3.3'
 end
