@@ -44,12 +44,12 @@ class HHAssetCell: UICollectionViewCell {
 class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     /// 选中的照片
-    @objc var selectedPHArray: Array<HHAssetModel> = []
+    @objc public var selectedPHArray: Array<HHAssetModel> = []
     
     /// 最小照片必选张数,默认是0
     var minImagesCount: Int = 0
     /// 最多选择照片个数
-    @objc var maxCount: Int = 9
+    @objc public var maxCount: Int = 9
     /// Default is true, if set false, user can't picking video.
     /// 默认为YES，如果设置为NO,用户将不能选择视频
     @objc public var allowPickingVideo: Bool = true

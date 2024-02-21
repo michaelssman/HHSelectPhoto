@@ -13,7 +13,7 @@ import HHUtils
 
 class HHPermissionTool: NSObject {
     // MARK: 相册权限
-    @objc static func requestPHAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
+    @objc static public func requestPHAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
         let status: PHAuthorizationStatus
         if #available(iOS 14, *) {
             status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -66,7 +66,7 @@ class HHPermissionTool: NSObject {
     }
     
     // MARK: 选择部分照片
-    static func selectPartialPphotoPermission() -> Bool {
+    static public func selectPartialPphotoPermission() -> Bool {
         if #available(iOS 14, *) {
             let status: PHAuthorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
             return status == .limited
@@ -77,7 +77,7 @@ class HHPermissionTool: NSObject {
     }
     
     // MARK: 相机权限
-    @objc static func requestCameraAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
+    @objc static public func requestCameraAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
         let device: AVCaptureDevice? = AVCaptureDevice.default(for: .video)
         guard device != nil else {
             print("未检测到摄像头")
@@ -113,7 +113,7 @@ class HHPermissionTool: NSObject {
     
     /// 麦克风授权
     /// - Returns: 0 ：未授权 1:已授权 -1：拒绝
-    static func checkMicrophoneAuthor() -> Int {
+    static public func checkMicrophoneAuthor() -> Int {
         var result: Int = 0
         let status: AVAudioSession.RecordPermission = AVAudioSession.sharedInstance().recordPermission
         switch status {

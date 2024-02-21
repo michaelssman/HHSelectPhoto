@@ -11,7 +11,7 @@ import Photos
 
 class HHImageManager: NSObject {
     
-    @objc static let manager = HHImageManager()//使用let这种方式来保证线程安全
+    @objc static public let manager = HHImageManager()//使用let这种方式来保证线程安全
     private override init() { }// 私有化构造方法(如果有需要也可以去掉)
     
     // MARK: 获取所有相册
@@ -191,7 +191,7 @@ class HHImageManager: NSObject {
     }
     
     // MARK: 保存图片到相册
-    @objc static func savePhoto(image: UIImage, location: CLLocation?, completionHandler: @escaping((_ asset: PHAsset?, _ error: Error?) -> Void)) {
+    @objc static public func savePhoto(image: UIImage, location: CLLocation?, completionHandler: @escaping((_ asset: PHAsset?, _ error: Error?) -> Void)) {
         var localIndentifier: String = String()
         PHPhotoLibrary.shared().performChanges {
             let request: PHAssetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
@@ -216,7 +216,7 @@ class HHImageManager: NSObject {
     ///   - image: 原图
     ///   - maxLength: 压缩到多大，5M：5 * 1024 * 1024
     /// - Returns: 压缩后的数据
-    @objc static func compressImage(_ image: UIImage, maxFileSize: Int) -> Data? {
+    @objc static public func compressImage(_ image: UIImage, maxFileSize: Int) -> Data? {
         // Compress by quality
         var compression: CGFloat = 1
         let minCompression: CGFloat = 0.01
@@ -246,7 +246,7 @@ class HHImageManager: NSObject {
         return compressedData
     }
     // MARK: 缩放图片尺寸
-    static func scaleImage(image: UIImage, size: CGSize) -> UIImage {
+    static public func scaleImage(image: UIImage, size: CGSize) -> UIImage {
         guard image.size.width > size.width else {
             return image
         }
