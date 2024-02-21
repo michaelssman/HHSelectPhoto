@@ -1,9 +1,9 @@
 {
   "name": "HHSelectPhoto",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "summary": "A short description of HHSelectPhoto.",
   "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/michaelstrongself@outlook.com/HHSelectPhoto",
+  "homepage": "https://github.com/michaelssman/HHSelectPhoto",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,8 +12,8 @@
     "michaelstrongself@outlook.com": "michaelstrongself@outlook.com"
   },
   "source": {
-    "git": "https://github.com/michaelstrongself@outlook.com/HHSelectPhoto.git",
-    "tag": "0.1.2"
+    "git": "https://github.com/michaelssman/HHSelectPhoto.git",
+    "tag": "0.1.4"
   },
   "platforms": {
     "ios": "10.0"
