@@ -18,8 +18,8 @@ class HHAssetCell: UICollectionViewCell {
     lazy var selectButton: UIButton = {
         let selectButton = UIButton(type: .custom)
         selectButton.frame = CGRect(x: bounds.width - 29, y: 4, width: 25, height: 25)
-        selectButton.setBackgroundImage(UIImage(named: "imgSelecte_NO"), for: .normal)
-        selectButton.setBackgroundImage(UIImage(named: "imgSelecte_YES"), for: .selected)
+        selectButton.setBackgroundImage(bundleImage("imgSelecte_NO"), for: .normal)
+        selectButton.setBackgroundImage(bundleImage("imgSelecte_YES"), for: .selected)
         selectButton.setEnlargeEdge(size: 10)
         return selectButton
     }()
@@ -59,7 +59,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     
     ///当前相簿
     var albumModel: HHAlbumModel?
-        
+    
     /// 相册
     lazy var albumVC: HHAlbumPickerController = {
         let albumVC: HHAlbumPickerController = HHAlbumPickerController()
@@ -135,7 +135,6 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         
         fetchDatas()
         
-        addObserver(self, forKeyPath: #keyPath(selectedPHArray), options: .new, context: nil)
         ///添加相册控制器
         addChild(albumVC)
         albumVC.view.frame = CGRect(x: 0, y: -view.bounds.height, width: view.bounds.width, height: view.bounds.height)
@@ -155,8 +154,8 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         let titleButton: HHButton = HHButton(type: .custom)
         titleButton.setTitle(albumModel?.name, for: .normal)
         titleButton.setTitleColor(.darkGray, for: .normal)
-        titleButton.setImage(UIImage(named: "triangle"), for: .normal)
-        titleButton.setImage(UIImage(named: "triangle_sel"), for: .selected)
+        titleButton.setImage(bundleImage("triangle"), for: .normal)
+        titleButton.setImage(bundleImage("triangle_sel"), for: .selected)
         titleButton.frame = CGRect(x: 0, y: 0, width: 100, height: titleButtonHeight)
         titleButton.layer.masksToBounds = true
         titleButton.layer.cornerRadius = 6.0
@@ -269,7 +268,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
             })
         }
     }
-
+    
     @objc func previewAction() {
         if selectedPHArray.count == 0 {
             print("未选中任何照片")
@@ -283,8 +282,8 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
             print("请至少选择 \(minImagesCount) 张照片")
             return
         }
-        if (self.delegate?.responds(to: #selector(self.delegate?.HHPhotosViewControllerUploadPhotosSucceed(_:))))! {
-            self.delegate?.HHPhotosViewControllerUploadPhotosSucceed!(selectedPHArray)
+        if let d = self.delegate, d.responds(to: #selector(self.delegate?.HHPhotosViewControllerUploadPhotosSucceed(_:))) {
+            d.HHPhotosViewControllerUploadPhotosSucceed!(selectedPHArray)
         }
         navigationController?.dismiss(animated: true, completion: {
         })
@@ -315,8 +314,15 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         
     }
     
-    deinit {
+    public override func viewWillAppear(_ animated: Bool) {
+        addObserver(self, forKeyPath: #keyPath(selectedPHArray), options: .new, context: nil)
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
         removeObserver(self, forKeyPath:#keyPath(selectedPHArray) , context: nil)
+    }
+    
+    deinit {
         print("图片选择释放了～")
     }
     

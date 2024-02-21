@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import HHSelectPhoto
 
 class ViewController: UIViewController {
 
@@ -20,5 +21,21 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        HHPermissionTool.requestPHAuthorizationStatus { success in
+            guard success else {return}
+            DispatchQueue.main.async {
+                let vc: HHPhotosViewController = HHPhotosViewController()
+                vc.maxCount = 3
+                let navC: UINavigationController = UINavigationController(rootViewController: vc)
+                navC.modalTransitionStyle = .coverVertical
+                navC.modalPresentationStyle = .fullScreen
+                self.present(navC, animated: true) {
+                    //
+                }
+            }
+        }
+    }
+    
 }
 

@@ -29,20 +29,14 @@ public class HHButton: UIButton {
         return super.imageRect(forContentRect: contentRect)
     }
     
-    /// 计算文字宽度
-    var calculatedTitleWidth: CGFloat {
-        if let titleLabel = self.titleLabel, let text = titleLabel.text {
-            return text.calculateStringSize(font: titleLabel.font).width
-        } else {
-            return titleWidth;
-        }
-    }
-    
     public override func setTitle(_ title: String?, for state: UIControl.State) {
         super.setTitle(title, for: state)
         var titleRect = self.titleRect
         var imageRect = self.imageRect
-        
+        /// 计算文字宽度
+        if let titleLabel = self.titleLabel, let text = titleLabel.text {
+            titleWidth = text.calculateStringSize(font: titleLabel.font).width
+        }
         if titleRect.origin.x < imageRect.origin.x {
             let maxTitleWidth = self.frame.size.width - titleRect.origin.x - space - imageRect.size.width
             titleRect.size.width = titleWidth > maxTitleWidth ? maxTitleWidth : titleWidth

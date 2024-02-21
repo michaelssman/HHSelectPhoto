@@ -10,12 +10,12 @@ import UIKit
 class HHPhotosView: UIView {
 
     lazy var alertImageView: UIImageView = {
-        let alertImageView: UIImageView = UIImageView(image: UIImage(named: "alertP"))
+        let alertImageView: UIImageView = UIImageView(image: bundleImage("alertP"))
         return alertImageView
     }()
     lazy var rightButton: UIButton = {
         let rightButton: UIButton = UIButton(type: .custom)
-        rightButton.setImage(UIImage(named: "alertP_r"), for: .normal)
+        rightButton.setImage(bundleImage("alertP_r"), for: .normal)
         rightButton.addTarget(self, action: #selector(requestPermission), for: .touchUpInside)
         rightButton.setEnlargeEdge(size: 10)
         return rightButton

@@ -1,7 +1,7 @@
 PODS:
-  - HHSelectPhoto (0.1.7):
-    - HHUtils (= 0.3.3)
-  - HHUtils (0.3.3)
+  - HHSelectPhoto (0.1.8):
+    - HHUtils (= 0.3.4)
+  - HHUtils (0.3.4)
 
 DEPENDENCIES:
   - HHSelectPhoto (from `../`)
@@ -15,8 +15,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  HHSelectPhoto: f6fb84fbc401e9de3f5408405691c1cebd0f9b8f
-  HHUtils: bd46d2c8c783386c757793dc8e86b15b9cb80152
+  HHSelectPhoto: 608dd1291ad67475538d276760b5fc07f670a0c0
+  HHUtils: b32c0531de9aed3eabb4d3c5bdf2492e41711502
 
 PODFILE CHECKSUM: e920a073ff6b48fba6425bedc9a84fb74ffafc14
 
