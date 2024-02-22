@@ -43,7 +43,7 @@ HHSelectPhoto is available under the MIT license. See the LICENSE file for more 
 - 已选图片数组
 
 ### 选中cell才下载原图，不选中的话不显示原图。
-
+使用PHImageManager根据PHAsset来获取原图。
 ### 照片选择导航栏选择相册
 - 根据顶部按钮select状态去控制显示、隐藏相册选择页面。
 

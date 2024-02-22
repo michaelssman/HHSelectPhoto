@@ -83,7 +83,7 @@ class HHAlbumPickerController: UIViewController {
             tableView.sectionHeaderTopPadding = 0.0
         } else {
             // Fallback on earlier versions
-        }     
+        }
         return tableView
     }()
     lazy var objects: Array = Array<HHAlbumModel>() {
@@ -102,7 +102,7 @@ class HHAlbumPickerController: UIViewController {
         }
         
         let tapView: UIView = UIView(frame: CGRect(x: 0, y: tableViewHeight, width: SCREEN_WIDTH, height: SCREEN_HEIGHT - tableViewHeight))
-        tapView.backgroundColor = .lightGray
+        tapView.backgroundColor = .init(white: 0, alpha: 0.6)
         view.addSubview(tapView)
         tapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cancelAlbumPicker)))
     }

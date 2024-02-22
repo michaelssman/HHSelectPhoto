@@ -36,9 +36,7 @@ class HHAssetCell: UICollectionViewCell {
 
 @objc protocol HHPhotosViewControllerDelegate: NSObjectProtocol {
     ///上传成功
-    @objc optional func HHPhotosViewControllerUploadPhotosSucceed(_ photoArray: Array<HHAssetModel>)
-    /// 取消选择
-    @objc optional func HHPhotosViewControllerCancel()
+    @objc optional func saveAction(_ photoArray: Array<HHAssetModel>)
 }
 
 public class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
@@ -147,7 +145,8 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         partPermissionAlertV.frame = CGRect(x: 0, y: CGRectGetMaxY(collectionView.frame), width: SCREEN_WIDTH, height: partPermissionAlertVHeight)
         bottomV.frame = CGRect(x: 0, y: CGRectGetMaxY(collectionView.frame) + partPermissionAlertVHeight, width: SCREEN_WIDTH, height: bottomHeight)
         selectedView.frame = CGRect(x: 0, y: CGRectGetMaxY(bottomV.frame), width: SCREEN_WIDTH, height: selectedViewHeight)
-        bottomV.setupCount(currentCount: 0, totalCount: maxCount)
+        //已选
+        bottomV.setupCount(currentCount: selectedPHArray.count, totalCount: maxCount)
     }
     
     func setNavigationBar() {
@@ -162,7 +161,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         titleButton.addTarget(self, action: #selector(titleClickAction), for: .touchUpInside)
         navigationItem.titleView = titleButton
         ///取消按钮
-        let left: UIBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(didSelectedNavCancelButton))
+        let left: UIBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(cancelAction))
         left.tintColor = .darkGray
         navigationItem.leftBarButtonItem = left
     }
@@ -256,24 +255,25 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         titleButton.isSelected = !titleButton.isSelected
     }
     
-    @objc func didSelectedNavCancelButton() {
+    @objc func cancelAction() {
         let titleButton: HHButton = navigationItem.titleView as! HHButton
         if titleButton.isSelected {
             titleClickAction()
         } else {
-            if self.delegate != nil && ((self.delegate?.responds(to: #selector(self.delegate?.HHPhotosViewControllerCancel))) != nil) {
-                self.delegate?.HHPhotosViewControllerCancel?()
-            }
             navigationController?.dismiss(animated: true, completion: {
             })
         }
     }
     
+    // MARK: 预览
     @objc func previewAction() {
-        if selectedPHArray.count == 0 {
+        guard selectedPHArray.count > 0 else {
             print("未选中任何照片")
             return
         }
+        let preview: HHPreviewViewController = HHPreviewViewController()
+        preview.images = selectedPHArray.map({$0.asset})
+        navigationController?.present(preview, animated: true)
     }
     
     @objc func doneAction() {
@@ -282,8 +282,8 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
             print("请至少选择 \(minImagesCount) 张照片")
             return
         }
-        if let d = self.delegate, d.responds(to: #selector(self.delegate?.HHPhotosViewControllerUploadPhotosSucceed(_:))) {
-            d.HHPhotosViewControllerUploadPhotosSucceed!(selectedPHArray)
+        if let d = self.delegate, d.responds(to: #selector(d.saveAction(_:))) {
+            d.saveAction?(selectedPHArray)
         }
         navigationController?.dismiss(animated: true, completion: {
         })
@@ -311,7 +311,6 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         } completion: { Bool in
             //
         }
-        
     }
     
     public override func viewWillAppear(_ animated: Bool) {

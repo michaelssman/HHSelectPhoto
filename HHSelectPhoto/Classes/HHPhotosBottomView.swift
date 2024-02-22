@@ -38,7 +38,7 @@ class HHPhotosBottomView: UIView {
     }
     
     func setupCount(currentCount: NSInteger, totalCount: NSInteger) {
-        countLab.text = "完成\(currentCount)/\(totalCount)"
+        countLab.text = "上传\(currentCount)/\(totalCount)"
     }
     
     override func layoutSubviews() {
