@@ -18,7 +18,7 @@ class HHPhotosBottomView: UIView {
     }()
     lazy var countLab: UILabel = {
        let countLab = UILabel()
-        countLab.backgroundColor = .lightGray
+        countLab.backgroundColor = UIColor(hex: 0x01C257)
         countLab.font = .systemFont(ofSize: 16)
         countLab.layer.masksToBounds = true
         countLab.layer.cornerRadius = 5.0
@@ -28,7 +28,7 @@ class HHPhotosBottomView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .cyan
+        backgroundColor = .white
         addSubview(previewBtn)
         addSubview(countLab)
     }

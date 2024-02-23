@@ -34,7 +34,7 @@ class HHAssetCell: UICollectionViewCell {
     }
 }
 
-@objc protocol HHPhotosViewControllerDelegate: NSObjectProtocol {
+@objc public protocol HHPhotosViewControllerDelegate: NSObjectProtocol {
     ///上传成功
     @objc optional func saveAction(_ photoArray: Array<HHAssetModel>)
 }
@@ -67,7 +67,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     ///所有图片 数据源
     var assetModels: Array<HHAssetModel> = []
     ///代理
-    @objc weak var delegate: HHPhotosViewControllerDelegate?
+    @objc public weak var delegate: HHPhotosViewControllerDelegate?
     
     static let itemMargin: CGFloat = 2
     let itemSize: CGFloat = (SCREEN_WIDTH - 4 * itemMargin) / 3
@@ -75,6 +75,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     let bottomHeight: CGFloat = 50
     var partPermissionAlertVHeight: CGFloat = 30
     let selectedViewHeight: CGFloat = 73
+    var collectionViewHeightConstraint: NSLayoutConstraint!
     
     lazy var collectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -129,7 +130,9 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
             partPermissionAlertV.isHidden = true
         }
         ///初始frame
-        setUpSubViewsFrame()
+        setUpSubViewsConstraints()
+        //已选
+        bottomV.setupCount(currentCount: selectedPHArray.count, totalCount: maxCount)
         
         fetchDatas()
         
@@ -140,13 +143,54 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         
     }
     
-    func setUpSubViewsFrame() {
-        collectionView.frame = CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom)
-        partPermissionAlertV.frame = CGRect(x: 0, y: CGRectGetMaxY(collectionView.frame), width: SCREEN_WIDTH, height: partPermissionAlertVHeight)
-        bottomV.frame = CGRect(x: 0, y: CGRectGetMaxY(collectionView.frame) + partPermissionAlertVHeight, width: SCREEN_WIDTH, height: bottomHeight)
-        selectedView.frame = CGRect(x: 0, y: CGRectGetMaxY(bottomV.frame), width: SCREEN_WIDTH, height: selectedViewHeight)
-        //已选
-        bottomV.setupCount(currentCount: selectedPHArray.count, totalCount: maxCount)
+    func setUpSubViewsConstraints() {
+        // 首先，禁用视图的自动尺寸调整掩码，因为我们要使用Auto Layout来定义它们的尺寸和位置
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        partPermissionAlertV.translatesAutoresizingMaskIntoConstraints = false
+        bottomV.translatesAutoresizingMaskIntoConstraints = false
+        selectedView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // 为collectionView添加高度约束
+        // collectionView高度约束，这里计算高度时考虑了是否有选中的图片、底部视图、权限提示视图的高度以及设备的安全区域
+        collectionViewHeightConstraint = collectionView.heightAnchor.constraint(equalToConstant: SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom)
+        collectionViewHeightConstraint.isActive = true
+        
+        // 为collectionView添加约束
+        NSLayoutConstraint.activate([
+            // collectionView左边缘与父视图左边缘对齐
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            // collectionView右边缘与父视图右边缘对齐
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // collectionView顶部与父视图顶部对齐
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            
+            // partPermissionAlertV左边缘与父视图左边缘对齐
+            partPermissionAlertV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            // partPermissionAlertV右边缘与父视图右边缘对齐
+            partPermissionAlertV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // partPermissionAlertV顶部与collectionView底部对齐
+            partPermissionAlertV.topAnchor.constraint(equalTo: collectionView.bottomAnchor),
+            // partPermissionAlertV高度固定，不根据其他条件变化
+            partPermissionAlertV.heightAnchor.constraint(equalToConstant: partPermissionAlertVHeight),
+            
+            // bottomV左边缘与父视图左边缘对齐
+            bottomV.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            // bottomV右边缘与父视图右边缘对齐
+            bottomV.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // bottomV顶部与partPermissionAlertV底部对齐
+            bottomV.topAnchor.constraint(equalTo: partPermissionAlertV.bottomAnchor),
+            // bottomV高度固定
+            bottomV.heightAnchor.constraint(equalToConstant: bottomHeight),
+            
+            // selectedView左边缘与父视图左边缘对齐
+            selectedView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            // selectedView右边缘与父视图右边缘对齐
+            selectedView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // selectedView顶部与bottomV底部对齐
+            selectedView.topAnchor.constraint(equalTo: bottomV.bottomAnchor),
+            // selectedView高度固定
+            selectedView.heightAnchor.constraint(equalToConstant: selectedViewHeight)
+        ])
     }
     
     func setNavigationBar() {
@@ -300,16 +344,17 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
                 let set =  change[.indexesKey] as! NSIndexSet
                 selectedView.deleteItems(index: set.firstIndex)
             }
-            layoutSubviews()
-        }
-    }
-    
-    func layoutSubviews() {
-        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseOut) { [self] in
-            setUpSubViewsFrame()
-            collectionView.reloadData()
-        } completion: { Bool in
-            //
+            // 切换collectionView的高度
+            collectionViewHeightConstraint.constant = SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom
+            // 调用UIView的类方法来开始动画
+            UIView.animate(withDuration: 0.3) {
+                // 这将会触发视图的布局更新，应用新的约束
+                self.view.layoutIfNeeded()
+            } completion: { [self] result in
+                collectionView.reloadData()
+            }
+            //已选
+            bottomV.setupCount(currentCount: selectedPHArray.count, totalCount: maxCount)
         }
     }
     

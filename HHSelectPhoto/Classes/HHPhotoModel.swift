@@ -17,7 +17,7 @@ public enum HHAssetModelMediaType: Int {
     case audio
 }
 
-class HHAssetModel: NSObject {
+public class HHAssetModel: NSObject {
     var asset: PHAsset
     //    public var type: HHAssetModelMediaType
     //    init(asset: PHAsset, type: HHAssetModelMediaType) {

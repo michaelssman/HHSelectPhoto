@@ -87,3 +87,10 @@ controller.delegate = self;
 
 ### 底部选中的小图显示
 使用KVO，观察选中的数组个数，为0时消失，大于0时显示。
+同时要更新约束
+```
+//定义高度约束
+var collectionViewHeightConstraint: NSLayoutConstraint!
+//更新约束
+collectionViewHeightConstraint.constant = SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom
+```
