@@ -9,7 +9,7 @@
 import UIKit
 import HHSelectPhoto
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, HHPhotosViewControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +28,7 @@ class ViewController: UIViewController {
             DispatchQueue.main.async {
                 let vc: HHPhotosViewController = HHPhotosViewController()
                 vc.maxCount = 3
+                vc.delegate = self
                 //            nav.photosVC.delegate = self;
                 //            nav.allowPickingImage = YES;
                 //            nav.allowPickingVideo = YES;
@@ -40,6 +41,10 @@ class ViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func saveAction(_ photoArray: Array<HHAssetModel>) {
+        print(photoArray.first?.asset)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -18,7 +18,7 @@ public enum HHAssetModelMediaType: Int {
 }
 
 public class HHAssetModel: NSObject {
-    public var asset: PHAsset
+    @objc public var asset: PHAsset
     //    public var type: HHAssetModelMediaType
     //    init(asset: PHAsset, type: HHAssetModelMediaType) {
     //        self.asset = asset
