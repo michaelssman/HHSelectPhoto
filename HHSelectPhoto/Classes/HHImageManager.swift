@@ -117,7 +117,7 @@ public class HHImageManager: NSObject {
     }
     
     // MARK: 根据PHAsset获取图片
-    @objc static func getPhoto(asset: PHAsset, photoWidth: CGFloat, networkAccessAllowed: Bool, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
+    @objc static public func getPhoto(asset: PHAsset, photoWidth: CGFloat, networkAccessAllowed: Bool, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
         
         let imageSize: CGSize = CGSize(width: photoWidth, height: photoWidth)
         var image: UIImage?
@@ -169,7 +169,7 @@ public class HHImageManager: NSObject {
     }
     
     // MARK: 根据identifiers去获取照片
-    @objc static func getPhoto(identifiers: Array<String>, completionHandler: @escaping((_ models: Array<HHAssetModel>) -> Void)) {
+    @objc static public func getPhoto(identifiers: Array<String>, completionHandler: @escaping((_ models: Array<HHAssetModel>) -> Void)) {
         let fetchResult: PHFetchResult<PHAsset> = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
         getAssets(result: fetchResult, allowPickingVideo: true, allowPickingImage: true) { models in
             completionHandler(models)
@@ -178,7 +178,7 @@ public class HHImageManager: NSObject {
     
     // MARK: 获取原图
     /// 如果info[PHImageResultIsDegradedKey] 为 YES，则表明当前返回的是缩略图，否则是原图。
-    @objc static func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
+    @objc static public func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
         let option: PHImageRequestOptions = PHImageRequestOptions()
         option.isNetworkAccessAllowed = true
         option.resizeMode = .fast
