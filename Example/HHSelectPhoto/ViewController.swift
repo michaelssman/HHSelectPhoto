@@ -44,8 +44,9 @@ class ViewController: UIViewController, HHPhotosViewControllerDelegate {
     }
     
     func saveAction(_ photoArray: Array<HHAssetModel>) {
-        print(photoArray.first?.asset)
+        
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
