@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension UIBarButtonItem {
+public extension UIBarButtonItem {
     convenience init(title: String, target: Any?, action: Selector, config: ((UIButton) -> Void)?) {
         let button: UIButton = UIButton(type: .custom)
         button.setTitle(title, for: .normal)

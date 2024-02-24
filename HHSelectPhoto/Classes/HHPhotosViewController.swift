@@ -37,6 +37,7 @@ class HHAssetCell: UICollectionViewCell {
 @objc public protocol HHPhotosViewControllerDelegate: NSObjectProtocol {
     ///上传成功
     @objc optional func saveAction(_ photoArray: Array<HHAssetModel>)
+    @objc optional func cancelAction()
 }
 
 public class HHPhotosViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
@@ -205,7 +206,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         titleButton.addTarget(self, action: #selector(titleClickAction), for: .touchUpInside)
         navigationItem.titleView = titleButton
         ///取消按钮
-        let left: UIBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(cancelAction))
+        let left: UIBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(clickCancel))
         left.tintColor = .darkGray
         navigationItem.leftBarButtonItem = left
     }
@@ -299,12 +300,13 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         titleButton.isSelected = !titleButton.isSelected
     }
     
-    @objc func cancelAction() {
+    @objc func clickCancel() {
         let titleButton: HHButton = navigationItem.titleView as! HHButton
         if titleButton.isSelected {
             titleClickAction()
         } else {
             navigationController?.dismiss(animated: true, completion: {
+                self.delegate?.cancelAction?()
             })
         }
     }
