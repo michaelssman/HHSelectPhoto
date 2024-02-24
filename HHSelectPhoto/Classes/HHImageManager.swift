@@ -179,15 +179,26 @@ public class HHImageManager: NSObject {
     // MARK: 获取原图
     /// 如果info[PHImageResultIsDegradedKey] 为 YES，则表明当前返回的是缩略图，否则是原图。
     @objc static public func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
-        let option: PHImageRequestOptions = PHImageRequestOptions()
-        option.isNetworkAccessAllowed = true
-        option.resizeMode = .fast
-        PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: option) { (image: UIImage?, info: [AnyHashable : Any]?) in
+        // 创建图片请求选项
+        let requestOptions: PHImageRequestOptions = PHImageRequestOptions()
+        requestOptions.version = .original // 请求原始图片
+        requestOptions.isSynchronous = false // 如果需要异步获取图片，则设置为false
+        requestOptions.deliveryMode = .highQualityFormat // 请求高质量图片
+        requestOptions.isNetworkAccessAllowed = true
+        
+        // 请求原图
+        // 应该将targetSize参数设置为PHImageManagerMaximumSize，这样就会返回原始尺寸的图片。
+        let requestID = PHImageManager.default().requestImage(for: asset,
+                                                              targetSize: PHImageManagerMaximumSize,
+                                                              contentMode: .aspectFill,
+                                                              options: requestOptions) { (image: UIImage?, info: [AnyHashable : Any]?) in
             let downloadFinished = !(info![PHImageCancelledKey] != nil) && !(info![PHImageErrorKey] != nil)
             if downloadFinished, let result_image = image {
                 completionHandler(result_image)
             }
         }
+        
+        // 如果需要，可以使用requestID来取消请求
     }
     
     // MARK: 保存图片到相册
