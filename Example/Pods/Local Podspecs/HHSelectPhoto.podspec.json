@@ -1,6 +1,6 @@
 {
   "name": "HHSelectPhoto",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "summary": "A short description of HHSelectPhoto.",
   "description": "TODO: Add long description of the pod here.",
   "homepage": "https://github.com/michaelssman/HHSelectPhoto",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/michaelssman/HHSelectPhoto.git",
-    "tag": "0.2.7"
+    "tag": "0.2.8"
   },
   "platforms": {
     "ios": "10.0"
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "HHUtils": [
-      "0.3.9"
+      "0.4.0"
     ]
   }
 }
