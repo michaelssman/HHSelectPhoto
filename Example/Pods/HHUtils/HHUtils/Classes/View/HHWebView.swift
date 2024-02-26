@@ -228,28 +228,32 @@ public class HHWebView: UIView, WKNavigationDelegate, WKUIDelegate, WKScriptMess
     
     // MARK: - Load Local File (Optional)
     @objc public func loadLocalFile(filePath: String?) {
-        guard let filePath = filePath,
-              let url = URL(string: filePath) else {
+        guard let filePath = filePath else {
             return
         }
-        var mimeType = ""
-        if filePath.hasSuffix(".pdf") {
+        let fileURL = URL(fileURLWithPath: filePath)
+        // Determine the MIME type
+        let mimeType: String
+        switch fileURL.pathExtension.lowercased() {
+        case "pdf":
             mimeType = "application/pdf"
-        } else if filePath.hasSuffix(".docx") {
+        case "docx":
             mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        } else if filePath.hasSuffix(".pptx") {
+        case "pptx":
             mimeType = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        } else if filePath.hasSuffix(".xlsx") {
+        case "xlsx":
             mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        case "png":
+            mimeType = "image/png"
+        default:
+            mimeType = "application/octet-stream" // default or unknown file type
         }
         
-        let baseURL = URL(fileURLWithPath: NSTemporaryDirectory())
-        webView.loadFileURL(url, allowingReadAccessTo: baseURL)
-        do {
-            try webView.load(Data(contentsOf: url), mimeType: mimeType, characterEncodingName: "UTF-8", baseURL: baseURL)
-        } catch {
-            print("loadLocalFile")
-        }
+        // Use the file's directory as the base URL to allow read access
+        let baseURL = fileURL.deletingLastPathComponent()
+        
+        // Load the file into the web view
+        webView.loadFileURL(fileURL, allowingReadAccessTo: baseURL)
     }
     
     // MARK: 截图

@@ -1,12 +1,27 @@
 PODS:
-  - HHSelectPhoto (0.2.7):
-    - HHUtils (= 0.3.9)
-  - HHUtils (0.3.9)
+  - Alamofire (5.8.1)
+  - HHSelectPhoto (0.2.9):
+    - HHUtils (= 0.4.1)
+  - HHUtils (0.4.1):
+    - Alamofire (~> 5.0)
+    - RxCocoa (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
 
 DEPENDENCIES:
   - HHSelectPhoto (from `../`)
 
 SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Alamofire
+    - RxCocoa
+    - RxRelay
+    - RxSwift
   https://github.com/michaelssman/HHSpecs.git:
     - HHUtils
 
@@ -15,9 +30,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  HHSelectPhoto: 701888d6e4c6a9c059244db49d537c55ce30b956
-  HHUtils: e776c68bc616d616815083103f460933201de5c4
+  Alamofire: 3ca42e259043ee0dc5c0cdd76c4bc568b8e42af7
+  HHSelectPhoto: 7bff494d5e7cf3c70d797ac1cece119bf733d65d
+  HHUtils: ff0d8b2511030c661c0290ceb8504959441dd761
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
 
-PODFILE CHECKSUM: e920a073ff6b48fba6425bedc9a84fb74ffafc14
+PODFILE CHECKSUM: 96784364a245dd588f25a531c06859afae2482b2
 
 COCOAPODS: 1.15.2

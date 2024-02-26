@@ -1,0 +1,205 @@
+//
+//  APISession.swift
+//  HHSwift
+//
+//  Created by Michael on 2022/12/27.
+//
+
+import Foundation
+import Alamofire
+import RxSwift
+
+public enum API {
+    static let baseURL = URL(string: "https://www.nmy.com/hh")!
+}
+
+public enum APISessionError: Error {
+    case networkError(error: Error, statusCode: Int)
+    case invalidJSON
+    case noData
+}
+
+public protocol APISession {
+    associatedtype ReponseType: Codable
+    func post(_ path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
+    func uploadImage(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType>
+    func request()
+}
+
+public extension APISession {
+    var defaultHeaders: HTTPHeaders {
+        let headers: HTTPHeaders = [
+            "x-app-platform": "iOS",
+            "x-app-version": "5.1.1",
+            "x-os-version": UIDevice.current.systemVersion,
+            "AsId": "100133941",
+            "User-Agent": "HHiOSUser-Agent",
+            "Authorization": "Bearer \(UserDefaults.standard.value(forKey: "access_token") ?? "")",
+            "Content-Type": "application/json",
+        ]
+        return headers
+    }
+    
+    var baseUrl: URL {
+        return API.baseURL
+    }
+    
+    func post(_ path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+        return request(path, method: .post, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
+    }
+    
+    func delete(_ path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+        return request(path, method: .delete, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
+    }
+    
+    func uploadImage(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
+        return upload(path, image: image, headers: headers)
+    }
+    
+    func request() {
+        //AF命名空间，链式调用
+        AF.request("http://59.110.112.58:9093/jxc_api/Product/GetById/100000020", method: .get, parameters: nil, encoding: URLEncoding.default, headers: defaultHeaders).response { response in
+            debugPrint(response)
+        }
+    }
+    
+}
+
+private extension APISession {
+    func request(_ path: String, method: HTTPMethod, headers: HTTPHeaders, parameters: Parameters?, encoding: ParameterEncoding) -> Observable<ReponseType> {
+        let url = baseUrl.appendingPathComponent(path)
+        let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
+        
+        return Observable.create { observer -> Disposable in
+            let queue = DispatchQueue(label: "hh.app.api", qos: .background, attributes: .concurrent)
+            // 网络请求
+            let request = AF.request(url, method: method, parameters: parameters, encoding: encoding, headers: allHeaders, interceptor: nil)
+                .validate()//.validate()：状态码是否在默认的可接受范围内200…299
+                .responseJSON(queue: queue) { response in
+                    debugPrint(response)
+                    switch response.result {
+                    case .success:
+                        if let data = response.data, !data.isEmpty {
+                            // 响应数据非空，进行序列化和处理
+                            do {
+                                let model = try JSONDecoder().decode(ReponseType.self, from: data)
+                                observer.onNext(model)
+                                observer.onCompleted()
+                            } catch {
+                                observer.onError(error)
+                            }
+                        } else {
+                            // 响应数据为空或长度为零，进行错误处理
+                            print("Response data is empty.")
+                            observer.onError(response.error ?? APISessionError.noData)
+                        }
+                    case .failure(let error):
+                        if let statusCode = response.response?.statusCode {
+                            observer.onError(APISessionError.networkError(error: error, statusCode: statusCode))
+                        } else {
+                            observer.onError(error)
+                        }
+                    }
+                }
+            return Disposables.create {
+                request.cancel()
+            }
+        }
+    }
+    
+    // MARK: 上传图片
+    func upload(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
+        let url = baseUrl.appendingPathComponent(path)
+        let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
+        
+        return Observable.create { observer -> Disposable in
+            // 将图片转换为Data
+            let imageData: Data! = image.jpegData(compressionQuality: 0.5)
+            
+            // 创建一个日期格式器
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyyMMddHHmmss"
+            let dateString = dateFormatter.string(from: Date())
+            let fileName = "image_\(dateString).jpg"
+            
+            // 使用Alamofire创建上传请求
+            let request = AF.upload(multipartFormData: { multipartFormData in
+                // 添加图片数据到表单数据中
+                multipartFormData.append(imageData, withName: "file", fileName: fileName, mimeType: "image/jpeg")//"image/*"
+                // 如果你还有其他的参数需要上传，可以继续添加到multipartFormData中
+                // 例如：multipartFormData.append("value".data(using: .utf8)!, withName: "key")
+            }, to: url, method: .post, headers: allHeaders)
+                .uploadProgress { progress in
+                    // 这里打印上传进度
+                    print("Upload Progress: \(progress.fractionCompleted)")
+                }
+                .response { response in
+                    // 这里处理上传完成后的响应
+                    switch response.result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let model = try JSONDecoder().decode(ReponseType.self, from: data)
+                                observer.onNext(model)
+                                observer.onCompleted()
+                            } catch {
+                                observer.onError(error)
+                            }
+                        } else {
+                            // 响应数据为空或长度为零，进行错误处理
+                            print("Response data is empty.")
+                            observer.onError(response.error ?? APISessionError.noData)
+                        }
+                        print("Image uploaded successfully: \(String(describing: data))")
+                    case .failure(let error):
+                        print("Error uploading image: \(error)")
+                        if let afError = error.asAFError, afError.isExplicitlyCancelledError {
+                            // 这里处理显式取消的情况
+                            print("Request was explicitly cancelled.")
+                        } else {
+                            // 其他错误处理
+                            print("Error uploading image: \(error)")
+                            observer.onError(error)
+                        }
+                    }
+                }
+            
+            return Disposables.create {
+                request.cancel()
+            }
+        }
+    }
+    
+}
+
+
+/// 将字典的键值对转换为key=value的形式，并且用&符号连接
+func queryString(from dictionary: [String: Any]) -> String {
+    //String数组
+    var components: [String] = []
+    for key in dictionary.keys.sorted() {
+        if let value = dictionary[key] {
+            /// 对键和值进行URL编码
+            /// 因为URL中的某些字符（如空格、特殊符号等）需要被转换为百分比编码（例如，空格被编码为%20），以确保它们在HTTP请求中传输时不会引起问题。
+            let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let encodedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            // 组装成key=value形式
+            components.append("\(encodedKey)=\(encodedValue)")
+        }
+    }
+    
+    // 用&符号连接所有的key=value对
+    return components.joined(separator: "&")
+}
+
+// 示例用法
+func testQueryString() {
+    let params: [String: Any] = [
+        "name": "John Appleseed",
+        "age": 25,
+        "city": "New York"
+    ]
+    
+    let queryString = queryString(from: params)
+    print(queryString) // 输出: age=25&city=New%20York&name=John%20Appleseed
+}
