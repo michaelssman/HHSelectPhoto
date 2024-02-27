@@ -10,7 +10,9 @@ import Alamofire
 import RxSwift
 
 public enum API {
-    static let baseURL = URL(string: "https://www.nmy.com/hh")!
+    static public let baseURL_0 = URL(string: "https://www.nmy.com/hh")!
+    static public let baseURL_1 = URL(string: "https://api1.example.com")!
+    static public let baseURL_2 = URL(string: "https://api2.example.com")!
 }
 
 public enum APISessionError: Error {
@@ -21,8 +23,9 @@ public enum APISessionError: Error {
 
 public protocol APISession {
     associatedtype ReponseType: Codable
-    func post(_ path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
-    func uploadImage(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType>
+    func get(_ baseUrl: URL, path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
+    func post(_ baseUrl: URL, path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
+    func uploadImage(_ baseUrl: URL, path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType>
     func request()
 }
 
@@ -40,20 +43,24 @@ public extension APISession {
         return headers
     }
     
-    var baseUrl: URL {
-        return API.baseURL
+    //    var baseUrl: URL {
+    //        return API.baseURL
+    //    }
+    
+    func get(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+        return request(baseUrl, path: path, method: .get, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
+    }
+
+    func post(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+        return request(baseUrl, path: path, method: .post, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
     
-    func post(_ path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
-        return request(path, method: .post, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
+    func delete(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+        return request(baseUrl, path: path, method: .delete, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
     
-    func delete(_ path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
-        return request(path, method: .delete, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
-    }
-    
-    func uploadImage(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
-        return upload(path, image: image, headers: headers)
+    func uploadImage(_ baseUrl: URL, path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
+        return upload(baseUrl, path: path, image: image, headers: headers)
     }
     
     func request() {
@@ -66,7 +73,7 @@ public extension APISession {
 }
 
 private extension APISession {
-    func request(_ path: String, method: HTTPMethod, headers: HTTPHeaders, parameters: Parameters?, encoding: ParameterEncoding) -> Observable<ReponseType> {
+    func request(_ baseUrl: URL, path: String, method: HTTPMethod, headers: HTTPHeaders, parameters: Parameters?, encoding: ParameterEncoding) -> Observable<ReponseType> {
         let url = baseUrl.appendingPathComponent(path)
         let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
         
@@ -108,7 +115,7 @@ private extension APISession {
     }
     
     // MARK: 上传图片
-    func upload(_ path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
+    func upload(_ baseUrl: URL, path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
         let url = baseUrl.appendingPathComponent(path)
         let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
         

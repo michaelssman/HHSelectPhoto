@@ -261,6 +261,12 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         return assetModels.count
     }
     
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let preview: HHPreviewViewController = HHPreviewViewController()
+        preview.images = [assetModels[indexPath.row].asset]
+        navigationController?.present(preview, animated: true)
+    }
+    
     // MARK: 点击cell上的选择按钮
     @objc func didSelectedCellSelectButton(_ sender: UIButton) {
         if sender.isSelected == false && selectedPHArray.count == maxCount {
