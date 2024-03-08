@@ -17,23 +17,37 @@ public let SCREEN_HEIGHT = UIScreen.main.bounds.height
 // MARK: keyWindow
 @inline(__always)
 public func keyWindow() -> UIWindow {
-    var result: UIWindow = UIWindow()
+    if Thread.isMainThread {
+        // 直接在主线程中执行
+        return getKeyWindow()
+    } else {
+        // 同步到主线程
+        return DispatchQueue.main.sync {
+            getKeyWindow()
+        }
+    }
+}
+
+@inline(__always)
+private func getKeyWindow() -> UIWindow {
+    var result: UIWindow?
     if #available(iOS 13.0, *) {
-        let scenes: Set = UIApplication.shared.connectedScenes
+        let scenes = UIApplication.shared.connectedScenes
         for scene in scenes {
-            if (scene.activationState == .foregroundActive) && (scene.isKind(of: UIWindowScene.self)) {
-                let windowScene: UIWindowScene = scene as! UIWindowScene
+            if scene.activationState == .foregroundActive, let windowScene = scene as? UIWindowScene {
                 for window in windowScene.windows {
                     if window.isKeyWindow {
                         result = window
                         break
                     }
                 }
-                break
+                if result != nil {
+                    break
+                }
             }
         }
     } else {
-        result = UIApplication.shared.keyWindow!
+        result = UIApplication.shared.keyWindow
     }
-    return result
+    return result!
 }

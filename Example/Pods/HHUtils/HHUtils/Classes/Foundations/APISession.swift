@@ -50,7 +50,7 @@ public extension APISession {
     func get(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
         return request(baseUrl, path: path, method: .get, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
-
+    
     func post(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
         return request(baseUrl, path: path, method: .post, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
@@ -209,4 +209,35 @@ func testQueryString() {
     
     let queryString = queryString(from: params)
     print(queryString) // 输出: age=25&city=New%20York&name=John%20Appleseed
+}
+
+
+func createURL(with baseURL: String, path: String, parameters: [String: String]?) -> URL? {
+    // 尝试构建URLComponents对象
+    guard var components = URLComponents(string: baseURL) else { return nil }
+    
+    // 设置路径
+    components.path = path
+    
+    if let parameters = parameters {
+        // 将字典转换为URLQueryItem数组
+        components.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
+    }
+    
+    // 返回构建好的URL
+    return components.url
+}
+
+func createUrlTest() {
+    // 使用示例
+    let baseURL = "https://example.com"
+    let path = "/api/items"
+    let parameters = ["category": "books", "price": "10"]
+    
+    if let url = createURL(with: baseURL, path: path, parameters: parameters) {
+        print(url) // 输出: https://example.com/api/items?category=books&price=10
+        // 在这里你可以使用这个URL来进行网络请求等操作
+    } else {
+        print("无法创建URL")
+    }
 }

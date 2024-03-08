@@ -1,8 +1,8 @@
 PODS:
-  - Alamofire (5.8.1)
-  - HHSelectPhoto (0.3.1):
+  - Alamofire (5.9.0)
+  - HHSelectPhoto (0.3.2):
     - HHUtils
-  - HHUtils (0.4.2):
+  - HHUtils (0.4.4):
     - Alamofire (~> 5.0)
     - MBProgressHUD (= 1.2.0)
     - RxCocoa (= 6.5.0)
@@ -33,14 +33,14 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 3ca42e259043ee0dc5c0cdd76c4bc568b8e42af7
-  HHSelectPhoto: 379dc285fa0179ab6d64a3db4d48b07b385bcafb
-  HHUtils: b3ddbe5d382338935928da784697a4cfc08b6bdc
+  Alamofire: 02b772c9910e8eba1a079227c32fbd9e46c90a24
+  HHSelectPhoto: 9e6fc694c9b76633442cd45deff20580bb2f012e
+  HHUtils: 9c55801036931962893f10899bc2f79c79f511b3
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
 
-PODFILE CHECKSUM: 96784364a245dd588f25a531c06859afae2482b2
+PODFILE CHECKSUM: 2014f2f553a2592abf65f1e31bf0255119030fff
 
 COCOAPODS: 1.15.2

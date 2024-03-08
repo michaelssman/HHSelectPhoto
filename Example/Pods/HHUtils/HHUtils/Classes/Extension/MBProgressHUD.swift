@@ -16,7 +16,7 @@
 /// hud.label.font = [UIFont boldSystemFontOfSize:18];
 
 import Foundation
-import HHUtils
+import MBProgressHUD
 
 extension MBProgressHUD {
     /// 文字颜色
