@@ -50,11 +50,13 @@ public class HHImageManager: NSObject {
                     return
                 }
                 
-                if (assetCollection.localizedTitle?.contains("Hidden"))! || assetCollection.localizedTitle == "已隐藏" {
-                    return
-                }
-                if (assetCollection.localizedTitle?.contains("Deleted"))! || assetCollection.localizedTitle == "最近删除" {
-                    return
+                if let localizedTitle = assetCollection.localizedTitle {
+                    if localizedTitle.contains("Hidden") || localizedTitle == "已隐藏" {
+                        return
+                    }
+                    if localizedTitle.contains("Deleted") || localizedTitle == "最近删除" {
+                        return
+                    }
                 }
                 
                 if assetCollection.assetCollectionSubtype == .smartAlbumUserLibrary {
@@ -65,7 +67,6 @@ public class HHImageManager: NSObject {
             }
         }
         completionHandler(albumArr)
-        //            677 61 1 7 212 233 20 11 1 1
     }
     // MARK: 获取拍照相册 默认的相册
     static func getCameraRollAlbum(allowPickingVideo: Bool, allowPickingImage: Bool, completion: @escaping (_ model: HHAlbumModel) -> Void) {
