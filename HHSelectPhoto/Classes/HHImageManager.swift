@@ -41,10 +41,10 @@ public class HHImageManager: NSObject {
             }
             let fetchResult0 = album as! PHFetchResult<PHAssetCollection>
             fetchResult0.enumerateObjects { (assetCollection: PHAssetCollection, index: Int, stop: UnsafeMutablePointer<ObjCBool>) in
-                //空相册
-                if assetCollection.estimatedAssetCount == 0 {
-                    return
-                }
+//                //空相册
+//                if assetCollection.estimatedAssetCount == 0 {
+//                    return
+//                }
                 let fetchResult: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: option)
                 if fetchResult.count < 1 {
                     return
