@@ -11,7 +11,7 @@ import Photos
 
 public class HHImageManager: NSObject {
     
-    @objc static public let manager = HHImageManager()//使用let这种方式来保证线程安全
+    static public let manager = HHImageManager()//使用let这种方式来保证线程安全
     private override init() { }// 私有化构造方法(如果有需要也可以去掉)
     
     // MARK: 获取所有相册
@@ -118,7 +118,7 @@ public class HHImageManager: NSObject {
     }
     
     // MARK: 根据PHAsset获取图片
-    @objc static public func getPhoto(asset: PHAsset, photoWidth: CGFloat, networkAccessAllowed: Bool, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
+    static public func getPhoto(asset: PHAsset, photoWidth: CGFloat, networkAccessAllowed: Bool, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
         
         let imageSize: CGSize = CGSize(width: photoWidth, height: photoWidth)
         var image: UIImage?
@@ -170,7 +170,7 @@ public class HHImageManager: NSObject {
     }
     
     // MARK: 根据identifiers去获取照片
-    @objc static public func getPhoto(identifiers: Array<String>, completionHandler: @escaping((_ models: Array<HHAssetModel>) -> Void)) {
+    static public func getPhoto(identifiers: Array<String>, completionHandler: @escaping((_ models: Array<HHAssetModel>) -> Void)) {
         let fetchResult: PHFetchResult<PHAsset> = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
         getAssets(result: fetchResult, allowPickingVideo: true, allowPickingImage: true) { models in
             completionHandler(models)
@@ -179,7 +179,7 @@ public class HHImageManager: NSObject {
     
     // MARK: 获取原图
     /// 如果info[PHImageResultIsDegradedKey] 为 YES，则表明当前返回的是缩略图，否则是原图。
-    @objc static public func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
+    static public func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
         // 创建图片请求选项
         let requestOptions: PHImageRequestOptions = PHImageRequestOptions()
         requestOptions.version = .original // 请求原始图片
@@ -203,7 +203,7 @@ public class HHImageManager: NSObject {
     }
     
     // MARK: 保存图片到相册
-    @objc static public func savePhoto(image: UIImage, location: CLLocation?, completionHandler: @escaping((_ asset: PHAsset?, _ error: Error?) -> Void)) {
+    static public func savePhoto(image: UIImage, location: CLLocation?, completionHandler: @escaping((_ asset: PHAsset?, _ error: Error?) -> Void)) {
         var localIndentifier: String = String()
         PHPhotoLibrary.shared().performChanges {
             let request: PHAssetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
@@ -228,7 +228,7 @@ public class HHImageManager: NSObject {
     ///   - image: 原图
     ///   - maxLength: 压缩到多大，5M：5 * 1024 * 1024
     /// - Returns: 压缩后的数据
-    @objc static public func compressImage(_ image: UIImage, maxFileSize: Int) -> Data? {
+    static public func compressImage(_ image: UIImage, maxFileSize: Int) -> Data? {
         // Compress by quality
         var compression: CGFloat = 1
         let minCompression: CGFloat = 0.01

@@ -13,7 +13,7 @@ import HHUtils
 
 public class HHPermissionTool: NSObject {
     // MARK: 相册权限
-    @objc static public func requestPHAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
+    static public func requestPHAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
         let status: PHAuthorizationStatus
         if #available(iOS 14, *) {
             status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -77,7 +77,7 @@ public class HHPermissionTool: NSObject {
     }
     
     // MARK: 相机权限
-    @objc static public func requestCameraAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
+    static public func requestCameraAuthorizationStatus(completion: @escaping ((_ success: Bool) -> Void)) {
         let device: AVCaptureDevice? = AVCaptureDevice.default(for: .video)
         guard device != nil else {
             print("未检测到摄像头")

@@ -11,8 +11,8 @@ import HHUtils
 
 // MARK: 插入删除cell的动画
 public class HHCellAnimateFlowLayout: UICollectionViewFlowLayout {
-    @objc public var addAnimatedIndex = -1
-    @objc public var removeAnimatedIndex = -1
+    public var addAnimatedIndex = -1
+    public var removeAnimatedIndex = -1
     
     // 添加时动画
     public override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {

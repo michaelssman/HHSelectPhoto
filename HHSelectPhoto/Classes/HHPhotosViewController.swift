@@ -48,12 +48,12 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     /// 最小照片必选张数,默认是0
     var minImagesCount: Int = 0
     /// 最多选择照片个数
-    @objc public var maxCount: Int = 9
+    public var maxCount: Int = 9
     /// Default is true, if set false, user can't picking video.
     /// 默认为YES，如果设置为NO,用户将不能选择视频
-    @objc public var allowPickingVideo: Bool = true
+    public var allowPickingVideo: Bool = true
     /// 默认为YES，如果设置为NO,用户将不能选择发送图片
-    @objc public var allowPickingImage: Bool = true
+    public var allowPickingImage: Bool = true
     
     
     ///当前相簿
@@ -68,7 +68,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     ///所有图片 数据源
     var assetModels: Array<HHAssetModel> = []
     ///代理
-    @objc public weak var delegate: HHPhotosViewControllerDelegate?
+    public weak var delegate: HHPhotosViewControllerDelegate?
     
     static let itemMargin: CGFloat = 2
     let itemSize: CGFloat = (SCREEN_WIDTH - 4 * itemMargin) / 3
