@@ -12,10 +12,10 @@ import Foundation
 /// 开头可以为-
 /// 开头可以为.
 /// "-.5 - 23.2 + 2 * 3.3 - 4",
-let pattern = "^-?\\d*\\.?\\d+([+\\-*/]?\\d*\\.?\\d+)*$"
-let regex = try! NSRegularExpression(pattern: pattern, options: [])
-
-func isValidExpression(_ input: String) -> Bool {
+public func isValidExpression(_ input: String) -> Bool {
+    let pattern = "^-?\\d*\\.?\\d+([+\\-*/]?\\d*\\.?\\d+)*$"
+    let regex = try! NSRegularExpression(pattern: pattern, options: [])
+    
     let range = NSRange(location: 0, length: input.utf16.count)
     let match = regex.firstMatch(in: input, options: [], range: range)
     return match != nil

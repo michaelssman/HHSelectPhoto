@@ -66,7 +66,7 @@ class HHAlbumCell: UITableViewCell {
 
 class HHAlbumPickerController: UIViewController {
     
-    let tableViewHeight: CGFloat = (SCREEN_HEIGHT - UIDevice.vg_navigationFullHeight()) / 2
+    let tableViewHeight: CGFloat = (SCREEN_HEIGHT - vg_navigationFullHeight()) / 2
     
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: tableViewHeight),
@@ -109,7 +109,7 @@ class HHAlbumPickerController: UIViewController {
     
     @objc func showAction() {
         UIView.animate(withDuration: 0.25) {
-            self.view.frame = CGRect(x: 0, y: UIDevice.vg_navigationFullHeight(), width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+            self.view.frame = CGRect(x: 0, y: vg_navigationFullHeight(), width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         }
     }
     @objc func hiddenAction() {

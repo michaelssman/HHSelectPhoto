@@ -120,7 +120,7 @@ class HHPreviewSelectedView: UIView, UICollectionViewDelegate, UICollectionViewD
     let kCellSize: CGFloat = 53
     lazy var flowLayout: HHCellAnimateFlowLayout = {
         let flowLayout: HHCellAnimateFlowLayout = HHCellAnimateFlowLayout()
-        flowLayout.scrollDirection = .horizontal
+        flowLayout.scrollDirection = .horizontal    // 水平滑动
         flowLayout.minimumInteritemSpacing = 15
         flowLayout.minimumLineSpacing = 15
         flowLayout.sectionInset = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)

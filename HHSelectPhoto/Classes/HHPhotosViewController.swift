@@ -153,7 +153,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
         
         // 为collectionView添加高度约束
         // collectionView高度约束，这里计算高度时考虑了是否有选中的图片、底部视图、权限提示视图的高度以及设备的安全区域
-        collectionViewHeightConstraint = collectionView.heightAnchor.constraint(equalToConstant: SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom)
+        collectionViewHeightConstraint = collectionView.heightAnchor.constraint(equalToConstant: SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - hh_safeDistance().bottom)
         collectionViewHeightConstraint.isActive = true
         
         // 为collectionView添加约束
@@ -353,7 +353,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
                 selectedView.deleteItems(index: set.firstIndex)
             }
             // 切换collectionView的高度
-            collectionViewHeightConstraint.constant = SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - UIDevice.hh_safeDistance().bottom
+            collectionViewHeightConstraint.constant = SCREEN_HEIGHT - (selectedPHArray.count > 0 ? selectedViewHeight : 0) - bottomHeight - partPermissionAlertVHeight - hh_safeDistance().bottom
             // 调用UIView的类方法来开始动画
             UIView.animate(withDuration: 0.3) {
                 // 这将会触发视图的布局更新，应用新的约束

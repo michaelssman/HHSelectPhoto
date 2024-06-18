@@ -15,7 +15,7 @@ public let SCREEN_HEIGHT = UIScreen.main.bounds.height
 
 /// 安全区高度
 @inline(__always)
-func hh_safeDistance() -> UIEdgeInsets {
+public func hh_safeDistance() -> UIEdgeInsets {
     guard #available(iOS 11.0, *) else {
         return UIEdgeInsets.zero //<11
     }
@@ -33,7 +33,7 @@ func hh_safeDistance() -> UIEdgeInsets {
 
 /// 顶部状态栏高度（包括安全区）
 @inline(__always)
-func vg_statusBarHeight() -> CGFloat {
+public func vg_statusBarHeight() -> CGFloat {
     var statusBarHeight: CGFloat = 0
     if #available(iOS 13.0, *) {
         let scene = UIApplication.shared.connectedScenes.first
@@ -47,7 +47,7 @@ func vg_statusBarHeight() -> CGFloat {
 }
 
 /// 导航栏高度
-let vg_navigationBarHeight: CGFloat = 44.0
+public let vg_navigationBarHeight: CGFloat = 44.0
 
 /// 状态栏+导航栏的高度
 @inline(__always)
@@ -56,11 +56,11 @@ public func vg_navigationFullHeight() -> CGFloat {
 }
 
 /// 底部导航栏高度
-let vg_tabBarHeight: CGFloat = 49.0
+public let vg_tabBarHeight: CGFloat = 49.0
 
 /// 底部导航栏高度（包括安全区）
 @inline(__always)
-func vg_tabBarFullHeight() -> CGFloat {
+public func vg_tabBarFullHeight() -> CGFloat {
     return vg_tabBarHeight + hh_safeDistance().bottom
 }
 
