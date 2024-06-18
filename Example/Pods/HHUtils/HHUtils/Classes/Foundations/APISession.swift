@@ -10,9 +10,13 @@ import Alamofire
 import RxSwift
 
 public enum API {
-    static public let baseURL_0 = URL(string: "https://www.nmy.com/hh")!
+    static public let baseURL_0 = URL(string: debug() ? "https://www.nmy.com/hh" : "https://www.nmy.com/hhss")!
     static public let baseURL_1 = URL(string: "https://api1.example.com")!
     static public let baseURL_2 = URL(string: "https://api2.example.com")!
+}
+enum APIString {
+    static let AuthorizedUpgrade: String = debug() ? "https://jxcproapitest.ningmengyun.com" : ""
+    static let ScanResult: String = debug() ? "https://jproapitest.ningmengyun.com" : ""
 }
 
 public enum APISessionError: Error {
@@ -23,8 +27,8 @@ public enum APISessionError: Error {
 
 public protocol APISession {
     associatedtype ReponseType: Codable
-    func get(_ baseUrl: URL, path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
-    func post(_ baseUrl: URL, path: String, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
+    func get(_ baseUrl: URL, path: String?, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
+    func post(_ baseUrl: URL, path: String?, headers: HTTPHeaders, parameters: Parameters?) -> Observable<ReponseType>
     func uploadImage(_ baseUrl: URL, path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType>
     func request()
 }
@@ -47,15 +51,15 @@ public extension APISession {
     //        return API.baseURL
     //    }
     
-    func get(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+    func get(_ baseUrl: URL, path: String? = nil, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
         return request(baseUrl, path: path, method: .get, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
     
-    func post(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+    func post(_ baseUrl: URL, path: String? = nil, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
         return request(baseUrl, path: path, method: .post, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
     
-    func delete(_ baseUrl: URL, path: String, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
+    func delete(_ baseUrl: URL, path: String? = nil, headers: HTTPHeaders = [:], parameters: Parameters? = nil) -> Observable<ReponseType> {
         return request(baseUrl, path: path, method: .delete, headers: headers, parameters: parameters, encoding: JSONEncoding.default)
     }
     
@@ -73,8 +77,11 @@ public extension APISession {
 }
 
 private extension APISession {
-    func request(_ baseUrl: URL, path: String, method: HTTPMethod, headers: HTTPHeaders, parameters: Parameters?, encoding: ParameterEncoding) -> Observable<ReponseType> {
-        let url = baseUrl.appendingPathComponent(path)
+    func request(_ baseUrl: URL, path: String?, method: HTTPMethod, headers: HTTPHeaders, parameters: Parameters?, encoding: ParameterEncoding) -> Observable<ReponseType> {
+        var url = baseUrl
+        if let path = path, path.count > 0 {
+            url = baseUrl.appendingPathComponent(path)
+        }
         let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
         
         return Observable.create { observer -> Disposable in
@@ -116,7 +123,7 @@ private extension APISession {
     
     // MARK: 上传图片
     func upload(_ baseUrl: URL, path: String, image: UIImage, headers: HTTPHeaders) -> Observable<ReponseType> {
-        let url = baseUrl.appendingPathComponent(path)
+        let url = path.count > 0 ? baseUrl.appendingPathComponent(path) : baseUrl
         let allHeaders = HTTPHeaders(defaultHeaders.dictionary.merging(headers.dictionary) { $1 })
         
         return Observable.create { observer -> Disposable in
@@ -186,7 +193,7 @@ func queryString(from dictionary: [String: Any]) -> String {
     var components: [String] = []
     for key in dictionary.keys.sorted() {
         if let value = dictionary[key] {
-            /// 对键和值进行URL编码
+            // MARK: 对键和值进行URL编码
             /// 因为URL中的某些字符（如空格、特殊符号等）需要被转换为百分比编码（例如，空格被编码为%20），以确保它们在HTTP请求中传输时不会引起问题。
             let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
             let encodedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -210,7 +217,6 @@ func testQueryString() {
     let queryString = queryString(from: params)
     print(queryString) // 输出: age=25&city=New%20York&name=John%20Appleseed
 }
-
 
 func createURL(with baseURL: String, path: String, parameters: [String: String]?) -> URL? {
     // 尝试构建URLComponents对象
@@ -239,5 +245,71 @@ func createUrlTest() {
         // 在这里你可以使用这个URL来进行网络请求等操作
     } else {
         print("无法创建URL")
+    }
+}
+
+// MARK: URLSession
+func sendPostRequest(urlString: String, requestBody: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+    // Create the URL
+    guard let url = URL(string: urlString) else {
+        print("Invalid URL")
+        return
+    }
+    
+    // Create the request object
+    var request = URLRequest(url: url, timeoutInterval: Double.infinity)
+    request.httpMethod = "POST"
+    // Set the request headers
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    // Set the request body
+    request.httpBody = requestBody.data(using: .utf8)
+    
+    // Create the URLSession configuration
+    let sessionConfig = URLSessionConfiguration.default
+    
+    // Create the URLSession
+    let session = URLSession(configuration: sessionConfig)
+    
+    // Create the data task
+    let task = session.dataTask(with: request) { (data, response, error) in
+        // Handle the response
+        if let error = error {
+            print("Error: \(error.localizedDescription)")
+            completion(.failure(error))
+            return
+        }
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            print("Status code: \(httpResponse.statusCode)")
+            
+            if let responseData = data, let responseString = String(data: responseData, encoding: .utf8) {
+                print("Response: \(responseString)")
+                
+                do {
+                    // Parse the response data into a dictionary
+                    if let responseDictionary = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any] {
+                        print("Response: \(responseDictionary)")
+                        completion(.success(responseDictionary))
+                    }
+                } catch {
+                    print("Error parsing JSON: \(error)")
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    // Start the task
+    task.resume()
+}
+
+func testSendPostRequest() {
+    sendPostRequest(urlString: "", requestBody: "") { result in
+        switch result {
+        case .success(let responseDict):
+            print("Success: \(responseDict)")
+        case .failure(let error):
+            print("Failure: \(error.localizedDescription)")
+        }
     }
 }

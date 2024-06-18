@@ -11,15 +11,11 @@ import UIKit
 public extension UIColor {
     static let designKit = DesignKitPalette.self
     enum DesignKitPalette {
-        public static let primary: UIColor = dynamicColor(light: UIColor(hex: 0x01C257), dark: UIColor(hex: 0x01C257))
+        public static let C_01C257: UIColor = dynamicColor(light: UIColor(hex: 0x01C257), dark: UIColor(hex: 0x01C257))
         public static let background: UIColor = dynamicColor(light: .white, dark: .black)
         public static let secondaryBackground: UIColor = dynamicColor(light: UIColor(hex: 0xf1f2f8), dark: UIColor(hex: 0x1D1B20))
         public static let tertiaryBackground: UIColor = dynamicColor(light: .white, dark: UIColor(hex: 0x2C2C2E))
         public static let line: UIColor = dynamicColor(light: UIColor(hex: 0xcdcdd7), dark: UIColor(hex: 0x48484A))
-        public static let primaryText: UIColor = dynamicColor(light: UIColor(hex: 0x111236), dark: .white)
-        public static let secondaryText: UIColor = dynamicColor(light: UIColor(hex: 0x68697f), dark: UIColor(hex: 0x8E8E93))
-        public static let tertiaryText: UIColor = dynamicColor(light: UIColor(hex: 0x8f90a0), dark: UIColor(hex: 0x8E8E93))
-        public static let quaternaryText: UIColor = dynamicColor(light: UIColor(hex: 0xb2b2bf), dark: UIColor(hex: 0x8E8E93))
         
         static private func dynamicColor(light: UIColor, dark: UIColor) -> UIColor {
             if #available(iOS 13.0, *) {

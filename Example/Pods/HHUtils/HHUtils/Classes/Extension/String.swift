@@ -22,21 +22,33 @@ public extension String {
     }
     
     // MARK: 根据文本内容计算高度
-    func heightWithMaxWidth(maxWidth: CGFloat, fontSize: CGFloat, bold: Bool = false) -> CGFloat {
+    func heightWithMaxWidth(maxWidth: CGFloat, fontSize: CGFloat, bold: Bool = false, numberOfLines: Int) -> CGFloat {
         let font: UIFont
         if bold {
             font = UIFont.boldSystemFont(ofSize: fontSize)
         } else {
             font = UIFont.systemFont(ofSize: fontSize)
         }
-        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: font]
-        return heightWithMaxWidth(maxWidth: maxWidth, attributes: attributes)
-    }
-    
-    func heightWithMaxWidth(maxWidth: CGFloat, attributes: [NSAttributedString.Key: Any]) -> CGFloat {
-        let size = CGSize(width: maxWidth, height: .greatestFiniteMagnitude)
-        let options: NSStringDrawingOptions = [.usesFontLeading, .usesLineFragmentOrigin, .truncatesLastVisibleLine]
-        return self.boundingRect(with: size, options: options, attributes: attributes, context: nil).size.height
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        
+        
+        /**
+         使用 boundingRect(with:options:attributes:context:) 方法来计算给定文本的高度。
+         constraintRect 定义了文本的最大宽度和高度。
+         使用 .greatestFiniteMagnitude 来表示无限高。
+         boundingBox 是计算出来的文本框的大小。
+         使用 ceil 来确保返回的高度是一个整数。
+         
+         如果你需要考虑 numberOfLines 的限制，可以计算出每行的高度，然后乘以行数。
+         */
+        let constraintRect = CGSize(width: maxWidth, height: .greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+        if numberOfLines > 0 {//限制行数
+            let lineHeight = ceil(boundingBox.height / CGFloat(numberOfLines))
+            return min(lineHeight * CGFloat(numberOfLines), boundingBox.height)
+        } else {
+            return ceil(boundingBox.height)
+        }
     }
     
     //计算文本宽度
@@ -46,38 +58,4 @@ public extension String {
         return attributedString.size()
     }
     
-    // MARK: NSRange和Range<String.Index>之间的转换来处理字符串索引
-    // 转换方法是基于UTF-16编码的字符串。如果使用的是包含扩展字符的Unicode字符串，需要进行适当的调整。
-    // Range<String.Index>转换为NSRange
-    func nsRange(from range: Range<String.Index>) -> NSRange {
-        let utf16Start = range.lowerBound.utf16Offset(in: self)
-        let utf16End = range.upperBound.utf16Offset(in: self)
-        
-        let location = utf16Start
-        let length = utf16End - utf16Start
-        
-        return NSRange(location: location, length: length)
-    }
-    // 将NSRange转换为Range<String.Index>
-    func range(from nsRange: NSRange) -> Range<String.Index>? {
-        guard let utf16Start = utf16.index(utf16.startIndex, offsetBy: nsRange.location, limitedBy: utf16.endIndex),
-              let utf16End = utf16.index(utf16Start, offsetBy: nsRange.length, limitedBy: utf16.endIndex),
-              let start = String.Index(utf16Start, within: self),
-              let end = String.Index(utf16End, within: self)
-        else {
-            return nil
-        }
-        
-        return start..<end
-    }
-    //    func testRange() {
-    //        let string = "Hello, World!"
-    //        let range = string.startIndex..<string.index(string.startIndex, offsetBy: 5)
-    //
-    //        let nsRange = string.nsRange(from: range)
-    //        print(nsRange)  // 输出：{0, 5}
-    //
-    //        let convertedRange = string.range(from: nsRange)
-    //        print(convertedRange)  // 输出：Optional(Range(0..<5))
-    //    }
 }

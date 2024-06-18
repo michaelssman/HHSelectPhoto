@@ -26,39 +26,32 @@ public extension UILabel {
         attributedText = attributedString
     }
     
-    /// label中特殊字符显示不同的样式
+    /// 特殊字符出现多次，都会被高亮显示
     /// - Parameters:
-    ///   - text: 特殊字符
+    ///   - keywords: 特殊字符
     ///   - color: 特殊字符的字体颜色
     ///   - font: 特殊字符的字体大小
-    func setSpecialText(_ text: String, color: UIColor, font: UIFont) {
-        // 传数字需要转换
-        let text = "\(text)"
-        // 如果不包含指定的字符串，直接return
-        guard self.text?.contains(text) == true else {
-            return
-        }
+    func setSpecialText(keywords: [String], color: UIColor, font: UIFont) {
+        guard let text = self.text else { return }
         
-        if let range = self.text?.range(of: text) {
-            //将Range<String.Index>转换为NSRange
-            let nsRange = self.text?.nsRange(from: range)
-            if let nsRange = nsRange {
-                setSpecialTextWithRange(nsRange, color: color, font: font)
+        let attributedString = NSMutableAttributedString(string: text)
+        
+        for keyword in keywords {
+            var searchRange = NSRange(location: 0, length: text.utf16.count)
+            
+            while searchRange.location < text.utf16.count {
+                let foundRange = (text as NSString).range(of: keyword, options: [], range: searchRange)
+                if foundRange.location != NSNotFound {
+                    attributedString.addAttribute(.foregroundColor, value: color, range: foundRange)
+                    // 设置字号
+                    attributedString.addAttribute(.font, value: font, range: foundRange)
+                    let newLocation = foundRange.location + foundRange.length
+                    searchRange = NSRange(location: newLocation, length: text.utf16.count - newLocation)
+                } else {
+                    break
+                }
             }
         }
-    }
-    
-    func setSpecialTextWithRange(_ range: NSRange, color: UIColor, font: UIFont) {
-        guard let attributedString = self.attributedText?.mutableCopy() as? NSMutableAttributedString else {
-            return
-        }
-        
-        // 设置字号
-        attributedString.addAttribute(.font, value: font, range: range)
-        // 设置文字颜色
-        attributedString.addAttribute(.foregroundColor, value: color, range: range)
-        // 设置中划线
-        //          attributedString.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: 12))
         
         self.attributedText = attributedString
     }
@@ -74,7 +67,7 @@ public extension UILabel {
         let bgView = UIView(frame: CGRect(x: 0, y: 0, width: tagLabW + space, height: tagH))
         bgView.addSubview(label)
         // 将视图转换成图片
-        if let image = bgView.image() {
+        if let image = bgView.toImage() {
             // 创建图像附件
             let attach = NSTextAttachment()
             // self.font.descender
