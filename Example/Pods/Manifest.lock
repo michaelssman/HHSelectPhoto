@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (5.9.0)
-  - HHSelectPhoto (0.3.3):
+  - HHSelectPhoto (0.3.4):
     - HHUtils
   - HHUtils (0.4.5):
     - Alamofire (~> 5.0)
@@ -37,7 +37,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 02b772c9910e8eba1a079227c32fbd9e46c90a24
-  HHSelectPhoto: f30989138603a1d9be5998aa4536be6e4fb69a54
+  HHSelectPhoto: 5df37730ca81dae4a606941c1fda187dcde7abef
   HHUtils: 92ad108df4b7dbe309db9e0ee820ca7922ee82c1
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
