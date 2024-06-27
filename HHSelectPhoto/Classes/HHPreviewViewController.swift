@@ -43,9 +43,9 @@ class HHPreviewViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PreviewCell", for: indexPath) as! PreviewCollectionViewCell
         if let phAsset = images[indexPath.item] as? PHAsset {
-            HHImageManager.getPhoto(asset: phAsset, completionHandler: { image in
+            HHImageManager.requestEditedImage(asset: phAsset) { image in
                 cell.imageView.image = image
-            })
+            }
         } else if let img = images[indexPath.item] as? UIImage {
             cell.imageView.image = img
         }

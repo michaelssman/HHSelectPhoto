@@ -117,56 +117,85 @@ public class HHImageManager: NSObject {
         completion(photoArr)
     }
     
-    // MARK: 根据PHAsset获取图片
-    static public func getPhoto(asset: PHAsset, photoWidth: CGFloat, networkAccessAllowed: Bool, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
+    /// 根据PHAsset获取图片
+    /// - Parameters:
+    ///   - asset: <#asset description#>
+    ///   - photoSize: 如果获取原图,size设置为PHImageManagerMaximumSize，返回原始尺寸的图片。
+    ///   - completionHandler: <#completionHandler description#>
+    ///   - progressHandler: 从iCloud下载进度
+    static public func getPhoto(asset: PHAsset, photoSize: CGFloat, completionHandler: @escaping((_ photo: UIImage?, _ info: Dictionary<AnyHashable, Any>?, _ isDegraded: Bool) -> Void), progressHandler: @escaping((_ progress: Double, _ error: Error?, _ stop: UnsafeMutablePointer<ObjCBool>, _ info: [AnyHashable : Any]?) -> Void)) {
         
-        let imageSize: CGSize = CGSize(width: photoWidth, height: photoWidth)
-        var image: UIImage?
+        let imageSize: CGSize = CGSize(width: photoSize, height: photoSize)
         // 修复获取图片时出现的瞬间内存过高问题
         // 下面两行代码，来自hsjcom，他的github是：https://github.com/hsjcom 表示感谢
         let option: PHImageRequestOptions = PHImageRequestOptions()
+        option.version = .original // 请求原始图片
         option.resizeMode = .fast
-        option.isSynchronous = true//只调一次
-        let _: PHImageRequestID = PHImageManager.default().requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: option) { (result: UIImage?, info: [AnyHashable : Any]?) in
-            guard let result_image = result, let _info = info else { return }
-            image = result_image
-            
-            let isCancelled = _info[PHImageCancelledKey] as? Bool
-            let isError = _info[PHImageErrorKey] as? Bool
+        /// true：只调一次
+        /// false：如果需要异步获取图片，则设置为false
+        option.isSynchronous = true
+//        option.deliveryMode = .highQualityFormat // 请求高质量图片
+//        option.isNetworkAccessAllowed = true
+
+        
+        // 如果需要，可以使用requestID来取消请求
+        let requestID: PHImageRequestID = PHImageManager.default().requestImage(for: asset, targetSize: imageSize, contentMode: .aspectFill, options: option) { (image: UIImage?, info: [AnyHashable : Any]?) in
+            guard let image = image, let info = info else { return }
+            let isCancelled = info[PHImageCancelledKey] as? Bool
+            let isError = info[PHImageErrorKey] as? Bool
             let downloadFinished = (isCancelled == nil || !isCancelled!) && (isError == nil || !isError!)
             if downloadFinished {
-                completionHandler(image, info, info![PHImageResultIsDegradedKey] as! Bool)
+                // 如果info[PHImageResultIsDegradedKey] 为 YES，则表明当前返回的是缩略图，否则是原图。
+                completionHandler(image, info, info[PHImageResultIsDegradedKey] as! Bool)
             }
             
             //download image from iCloud
-            guard let isCloud = _info[PHImageResultIsInCloudKey] as? Bool else {
+            guard let isCloud = info[PHImageResultIsInCloudKey] as? Bool else {
                 return
             }
-            if isCloud, networkAccessAllowed {
-                let options: PHImageRequestOptions = PHImageRequestOptions()
-                //下载进度
-                options.progressHandler = { (progress: Double, error: Error?, stop: UnsafeMutablePointer<ObjCBool>, info: [AnyHashable : Any]?) in
-                    DispatchQueue.main.async(execute: {
-                        progressHandler(progress, error, stop, info)
-                    })
-                }
-                options.isNetworkAccessAllowed = true
-                options.resizeMode = .fast
-                //
-                if #available(iOS 13, *) {
-                    PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { (imageData: Data?, dataUTI: String?, orientation: CGImagePropertyOrientation, info: [AnyHashable : Any]?) in
-                        if let imageData = imageData {
-                            let resultImage: UIImage? = UIImage(data: imageData)
-                            // TODO: 缩放图片至新尺寸
-                            completionHandler(resultImage, info, false)
-                        }
+            let options: PHImageRequestOptions = PHImageRequestOptions()
+            //下载进度
+            options.progressHandler = { (progress: Double, error: Error?, stop: UnsafeMutablePointer<ObjCBool>, info: [AnyHashable : Any]?) in
+                DispatchQueue.main.async(execute: {
+                    progressHandler(progress, error, stop, info)
+                })
+            }
+            options.isNetworkAccessAllowed = true
+            options.resizeMode = .fast
+            //
+            if #available(iOS 13, *) {
+                PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { (imageData: Data?, dataUTI: String?, orientation: CGImagePropertyOrientation, info: [AnyHashable : Any]?) in
+                    if let imageData = imageData {
+                        let resultImage: UIImage? = UIImage(data: imageData)
+                        // TODO: 缩放图片至新尺寸
+                        completionHandler(resultImage, info, false)
                     }
-                } else {
-                    // Fallback on earlier versions
                 }
+            } else {
+                // Fallback on earlier versions
             }
         }
         //        return imageRequestID
+    }
+    
+    // 获取编辑（包括裁剪和旋转）后的图像数据。
+    static public func requestEditedImage(asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
+        let options = PHImageRequestOptions()
+        options.isSynchronous = false
+        options.deliveryMode = .highQualityFormat
+        options.isNetworkAccessAllowed = true
+
+        if #available(iOS 13, *) {
+            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { (data, dataUTI, orientation, info) in
+                guard let data = data, let image = UIImage(data: data) else {
+                    completion(nil)
+                    return
+                }
+                completion(image)
+            }
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     // MARK: 根据identifiers去获取照片
@@ -175,31 +204,6 @@ public class HHImageManager: NSObject {
         getAssets(result: fetchResult, allowPickingVideo: true, allowPickingImage: true) { models in
             completionHandler(models)
         }
-    }
-    
-    // MARK: 获取原图
-    /// 如果info[PHImageResultIsDegradedKey] 为 YES，则表明当前返回的是缩略图，否则是原图。
-    static public func getPhoto(asset: PHAsset, completionHandler: @escaping((_ image: UIImage?) -> Void)) {
-        // 创建图片请求选项
-        let requestOptions: PHImageRequestOptions = PHImageRequestOptions()
-        requestOptions.version = .original // 请求原始图片
-        requestOptions.isSynchronous = false // 如果需要异步获取图片，则设置为false
-        requestOptions.deliveryMode = .highQualityFormat // 请求高质量图片
-        requestOptions.isNetworkAccessAllowed = true
-        
-        // 请求原图
-        // 应该将targetSize参数设置为PHImageManagerMaximumSize，这样就会返回原始尺寸的图片。
-        let requestID = PHImageManager.default().requestImage(for: asset,
-                                                              targetSize: PHImageManagerMaximumSize,
-                                                              contentMode: .aspectFill,
-                                                              options: requestOptions) { (image: UIImage?, info: [AnyHashable : Any]?) in
-            let downloadFinished = !(info![PHImageCancelledKey] != nil) && !(info![PHImageErrorKey] != nil)
-            if downloadFinished, let result_image = image {
-                completionHandler(result_image)
-            }
-        }
-        
-        // 如果需要，可以使用requestID来取消请求
     }
     
     // MARK: 保存图片到相册

@@ -241,7 +241,7 @@ public class HHPhotosViewController: UIViewController, UICollectionViewDelegate,
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: HHAssetCell = collectionView.dequeueReusableCell(withReuseIdentifier: "HHAssetCell", for: indexPath) as! HHAssetCell
-        HHImageManager.getPhoto(asset: assetModels[indexPath.row].asset, photoWidth: itemSize, networkAccessAllowed: false) { photo, info, isDegraded in
+        HHImageManager.getPhoto(asset: assetModels[indexPath.row].asset, photoSize: itemSize) { photo, info, isDegraded in
             cell.imageView.image = photo
         } progressHandler: { progress, error, stop, info in
             //

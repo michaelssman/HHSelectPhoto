@@ -207,7 +207,7 @@ class HHPreviewSelectedView: UIView, UICollectionViewDelegate, UICollectionViewD
     // MARK: 代理
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: HHPreviewSelectedCell = collectionView.dequeueReusableCell(withReuseIdentifier: "HHPreviewSelectedCell", for: indexPath) as! HHPreviewSelectedCell
-        HHImageManager.getPhoto(asset: selectedPHArray[indexPath.row].asset, photoWidth: 90, networkAccessAllowed: false) { photo, info, isDegraded in
+        HHImageManager.getPhoto(asset: selectedPHArray[indexPath.row].asset, photoSize: 90) { photo, info, isDegraded in
             cell.imageView.image = photo
         } progressHandler: { progress, error, stop, info in
             //

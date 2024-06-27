@@ -35,7 +35,7 @@ class HHAlbumCell: UITableViewCell {
         didSet {
             nameLabel.text = model?.name
             countLabel.text = "\(model!.count)"
-            HHImageManager.getPhoto(asset: (model?.result.firstObject)!, photoWidth: 40, networkAccessAllowed: true) { [self] photo, info, isDegraded in
+            HHImageManager.getPhoto(asset: (model?.result.firstObject)!, photoSize: 40) { [self] photo, info, isDegraded in
                 thumbnailImageView.image = photo
                 setNeedsLayout()
             } progressHandler: { progress, error, stop, info in
